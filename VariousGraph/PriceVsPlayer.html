@@ -6,24 +6,34 @@
     <title>Line Graph with Chart.js</title>
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div class="navbar">
-  <ul>
-    <li><a href="./PriceVsPlayer.html">Option 1</a></li>
-    <li><a href="./heatmap.html">Option 2</a></li>
-    <li><a href="#">Option 3</a></li>
-    <li><a href="#">Option 4</a></li>
-    <li><a href="#">Option 5</a></li>
-    <li><a href="#">Option 6</a></li>
-    <li><a href="#">Option 7</a></li>
-    <li><a href="#">Option 8</a></li>
-    <li><a href="#">Option 9</a></li>
-    <li><a href="#">Option 10</a></li>
-  </ul>
-</div>
-    <h1>Line Graph</h1>
+    <header class="bg-light py-3">
+      <div class="container d-flex align-items-center">
+        <a href="../index.html">
+          <img
+            src="../Images/logo.jpg"
+            alt="Logo"
+            class="mr-3"
+            style="width: 50px"
+          />
+        </a>
+        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
+          >Price Vs Player</a
+        >
+        <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
+      </div>
+    </header>
+    <h3>Price Vs Players This Visulaization is for Buissniess Analyst</h3>
     <div>
       <label for="attribute"></label>
       <select id="attribute">
@@ -33,17 +43,17 @@
       </select>
     </div>
     <div>
-      <label for="dataset">Select Dataset:</label>
+      <label for="dataset">Select Game:</label>
       <select id="dataset">
-        <option value="../Data/400.csv">Data 1</option>
-        <option value="../Data/254100.csv">Data 2</option>
-        <option value="../Data/287260.csv">Data 3</option>
-        <option value="../Data/300570.csv">Data 4</option>
-        <option value="../Data/620.csv">Data 5</option>
+        <option value="../Data/400.csv">GTA V</option>
+        <option value="../Data/254100.csv">CS:GO</option>
+        <option value="../Data/287260.csv">Dota 2</option>
+        <option value="../Data/300570.csv">PUBG</option>
+        <option value="../Data/620.csv">Among Us</option>
         <!-- Add additional options for other datasets if needed -->
       </select>
     </div>
-    <canvas id="myChart" width="600" height="400"></canvas>
+    <canvas id="myChart" width="600" height="300"></canvas>
 
     <script>
       // Function to fetch CSV data
@@ -137,5 +147,45 @@
           drawChart(selectedAttribute); // Redraw chart with selected dataset
         });
     </script>
+    <footer class="footer bg-dark text-light py-3 mt-auto">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col">
+            <p class="text-white mt-3">
+              Made with <span style="color: #ffffff">&hearts;</span> By Harsh &
+              Divyansh & Ishan
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a
+              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Harsh</a
+            >
+            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Harsh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/divyansh"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Divyansh</a
+            >
+            <a href="https://github.com/divyansh" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Divyansh</a
+            >
+            <a href="https://www.linkedin.com/in/ishan" class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Ishan</a
+            >
+            <!-- GitHub links -->
+
+            <a href="https://github.com/ishan" class="text-white"
+              ><i class="fab fa-github"></i> Ishan</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
