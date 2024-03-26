@@ -1,5 +1,126 @@
-<!DOCTYPE HTML>
-<html>
-  <title>Testing</title>
-  <body>Hello World!</body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Responsive Web Page</title>
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+/* Reset CSS */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure the body takes up at least the height of the viewport */
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 0;
+}
+
+.navbar ul {
+  list-style-type: none;
+  text-align: center;
+}
+
+.navbar ul li {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.navbar ul li a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* Footer styles */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px 0;
+  text-align: center;
+  margin-top: auto; /* Push footer to the bottom */
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+/* Center blocks */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.block {
+  width: 100px;
+  height: 100px;
+  background-color: #f0f0f0;
+  margin: 10px;
+  text-align: center;
+  line-height: 100px;
+}
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+  .navbar ul li {
+    display: block;
+    margin: 10px 0;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <ul>
+    <li><a href="./VariousGraph/PriceVsPlayer.html">Option 1</a></li>
+    <li><a href="./VariousGraph/heatmap.html">Option 2</a></li>
+    <li><a href="#">Option 3</a></li>
+    <li><a href="#">Option 4</a></li>
+    <li><a href="#">Option 5</a></li>
+    <li><a href="#">Option 6</a></li>
+    <li><a href="#">Option 7</a></li>
+    <li><a href="#">Option 8</a></li>
+    <li><a href="#">Option 9</a></li>
+    <li><a href="#">Option 10</a></li>
+  </ul>
+</div>
+
+<!-- Container for center blocks -->
+<div class="container">
+  <div class="block"><a href="./VariousGraph/PriceVsPlayer.html"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="./VariousGraph/heatmap.html"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+  <div class="block"><a href="#"><i class="fas fa-link"></i></a></div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <a href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin"></i></a>
+  <a href="https://github.com/" target="_blank"><i class="fab fa-github"></i></a>
+</div>
+
+</body>
 </html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Line Graph with Chart.js</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="navbar">
+  <ul>
+    <li><a href="./PriceVsPlayer.html">Option 1</a></li>
+    <li><a href="./heatmap.html">Option 2</a></li>
+    <li><a href="#">Option 3</a></li>
+    <li><a href="#">Option 4</a></li>
+    <li><a href="#">Option 5</a></li>
+    <li><a href="#">Option 6</a></li>
+    <li><a href="#">Option 7</a></li>
+    <li><a href="#">Option 8</a></li>
+    <li><a href="#">Option 9</a></li>
+    <li><a href="#">Option 10</a></li>
+  </ul>
+</div>
+    <h1>Line Graph</h1>
+    <div>
+      <label for="attribute"></label>
+      <select id="attribute">
+        <!-- <option value="NoPlayer">NoPlayer</option>
+        <option value="Sale">Sale</option>
+        <option value="Both">NoPlayer and Sale</option> -->
+      </select>
+    </div>
+    <div>
+      <label for="dataset">Select Dataset:</label>
+      <select id="dataset">
+        <option value="../Data/400.csv">Data 1</option>
+        <option value="../Data/254100.csv">Data 2</option>
+        <option value="../Data/287260.csv">Data 3</option>
+        <option value="../Data/300570.csv">Data 4</option>
+        <option value="../Data/620.csv">Data 5</option>
+        <!-- Add additional options for other datasets if needed -->
+      </select>
+    </div>
+    <canvas id="myChart" width="600" height="400"></canvas>
+
+    <script>
+      // Function to fetch CSV data
+      async function fetchData(url) {
+        const response = await fetch(url);
+        const data = await response.text();
+        return data;
+      }
+
+      // Function to parse CSV data
+      function parseData(data) {
+        const lines = data.split("\n").slice(1); // Skip header
+        const labels = [];
+        const noPlayerValues = [];
+        const saleValues = [];
+
+        lines.forEach((line) => {
+          const [week, noPlayer, sale] = line.split(",");
+          labels.push(week);
+          const parsedNoPlayer = Number(noPlayer);
+          if (parsedNoPlayer > 100) {
+            noPlayerValues.push(parsedNoPlayer / 40);
+          } else {
+            noPlayerValues.push(parsedNoPlayer);
+          }
+          saleValues.push(Number(sale));
+        });
+
+        return { labels, noPlayerValues, saleValues };
+      }
+
+      // Function to draw chart
+      function drawChart(attribute) {
+        const ctx = document.getElementById("myChart").getContext("2d");
+        const selectedDataset = document.getElementById("dataset").value;
+
+        fetchData(selectedDataset).then((data) => {
+          const parsedData = parseData(data);
+
+          if (window.chart) {
+            window.chart.destroy(); // Destroy existing chart if any
+          }
+
+          window.chart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: parsedData.labels,
+              datasets: [
+                {
+                  label: "NoPlayer",
+                  data: parsedData.noPlayerValues,
+                  borderColor: "rgb(75, 192, 192)",
+                  borderWidth: 2,
+                  fill: false,
+                },
+                {
+                  label: "Sale",
+                  data: parsedData.saleValues,
+                  borderColor: "rgb(255, 99, 132)",
+                  borderWidth: 2,
+                  fill: false,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              scales: {
+                yAxes: [
+                  {
+                    ticks: {
+                      beginAtZero: true,
+                    },
+                  },
+                ],
+              },
+            },
+          });
+        });
+      }
+
+      // Load CSV data and draw initial chart
+      drawChart("Both"); // Draw initial chart with NoPlayer as y-axis
+
+      // Event listener for attribute change
+
+      // Event listener for dataset change
+      document
+        .getElementById("dataset")
+        .addEventListener("change", function () {
+          const selectedAttribute = document.getElementById("attribute").value;
+          drawChart(selectedAttribute); // Redraw chart with selected dataset
+        });
+    </script>
+  </body>
+</html>
