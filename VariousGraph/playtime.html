@@ -36,6 +36,9 @@
             <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a </div>
             <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
     </header>
+
+    <h3 style="text-align: center;">Playtime analysis with playerbase of top 5 played games every year</h3>
+    <p style="text-align: center;">Years marked in red denote release of games with major playerbase.</p>
     <svg id="scatterplot">
 
     </svg>
@@ -63,7 +66,7 @@
 
             console.log(year_objects[2000])
 
-            const width = 800;
+            const width = 1000;
             const height = 500;
             const margin = { top: 20, right: 20, bottom: 30, left: 50 };
 
@@ -135,17 +138,36 @@
                     tooltip.style("opacity", 0); // Hide tooltip on mouseout
                 });
 
-            // Add axes
-            const xAxis = d3.axisBottom(xScale);
-            const yAxis = d3.axisLeft(yScale);
+
+            const xAxis = d3.axisBottom(xScale)
+                .tickFormat(d3.format("d")) // Format tick values as integers
+                .tickValues(d3.range(1998, 2021, 1)); // Set tick values to include both even and odd years
 
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
-
+            
+                const yAxis = d3.axisLeft(yScale);
             svg.append("g")
                 .call(yAxis);
 
+            svg.selectAll(".tick text")
+                .style("fill", function (d) {
+                    const yearData = top5GamesByYear[d];
+                    if (yearData) {
+                        const hasLargeRadius = yearData.some(game => radiusScale(game.r) > 10);
+                        return hasLargeRadius ? "red" : "black";
+                    }
+                    return "black";
+                })
+                .style("font-weight", function (d) {
+                    const yearData = top5GamesByYear[d];
+                    if (yearData) {
+                        const hasLargeRadius = yearData.some(game => radiusScale(game.r) > 10);
+                        return hasLargeRadius ? "bold" : "normal";
+                    }
+                    return "normal";
+                });
             // Add labels
             svg.append("text")
                 .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 10) + ")")
@@ -168,6 +190,7 @@
 
         function extractColumnValuesAsLists(filePath, xColumnName, yColumnName, name, release, type) {
             return d3.csv(filePath).then(data => {
+
                 // Ensure both columns exist to avoid errors
                 if (data.length > 0 && !(xColumnName in data[0]) && !(yColumnName in data[0])) {
                     throw new Error(`One or both columns "${xColumnName}" and "${yColumnName}" do not exist in the CSV file.`);
@@ -182,6 +205,8 @@
                 // console.log(data);
 
                 data.forEach(row => {
+                let ind = row['owners'].indexOf('-');
+                if(parseFloat(row['price'])!==0.0 || (parseFloat(row['price'])===0.0 && parseFloat(row['owners'].slice(0,ind))>1000000)){
                     const xValue = parseFloat(row[xColumnName]);
                     const yValue = row[yColumnName];
                     const nameElement = row[name];
@@ -203,7 +228,7 @@
                         releaseList.push(new Date(releaseElement)); // Parse release date
                         typeList.push(typeElement);
 
-                    }
+                    }}
                 });
 
                 const sortedIndices = releaseList.map((_, i) => i).sort((a, b) => releaseList[a] - releaseList[b]);
