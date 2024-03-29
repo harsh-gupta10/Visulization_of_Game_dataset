@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Title of the document -->
     <title>Sector Pie Chart</title>
-    <!-- External CSS links for Bootstrap and Font Awesome -->
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
@@ -15,8 +13,8 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
       rel="stylesheet"
     />
-    <!-- Internal CSS for tooltip styling -->
     <style>
+      /* Tooltip styling */
       .tooltip {
         position: absolute;
         text-align: center;
@@ -25,14 +23,13 @@
         background: lightsteelblue;
         border: 0px;
         border-radius: 8px;
-        pointer-events: none;
-        opacity: 0;
+        pointer-events: none; /* Let mouse events pass through, so it doesn't interfere with chart interaction */
+        opacity: 0; /* Start hidden */
         transition: opacity 0.3s;
       }
     </style>
   </head>
   <body>
-    <!-- Header section with navigation links -->
     <header class="bg-light py-3">
       <div class="container d-flex align-items-center">
         <a href="../index.html">
@@ -54,13 +51,10 @@
         <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
       </div>
     </header>
-    <!-- Main heading -->
     <h3 style="text-align: center;">Genres with their frequency and average playtime</h3>
     
-    <!-- SVG element for pie chart -->
     <svg></svg>
     
-    <!-- Footer section with social media links -->
     <footer class="footer bg-dark text-light py-3 mt-auto">
       <div class="container text-center">
         <div class="row">
@@ -92,6 +86,8 @@
             <a href="https://www.linkedin.com/in/ishan" class="text-white mr-4"
               ><i class="fab fa-linkedin"></i> Ishan</a
             >
+            <!-- GitHub links -->
+
             <a href="https://github.com/ishan" class="text-white"
               ><i class="fab fa-github"></i> Ishan</a
             >
@@ -99,10 +95,8 @@
         </div>
       </div>
     </footer>
-    <!-- External JavaScript library for D3.js -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-      // JavaScript code for creating the pie chart
       // Load and preprocess data
       d3.csv("../Data/steam.csv").then(function (data) {
         // Flatten the data so each genre is treated individually
@@ -130,6 +124,7 @@
 
         let svg = d3
           .select("svg")
+          
           .attr("width", 1200)
           .attr("height", 900)
           .append("g")
@@ -183,23 +178,24 @@
             ).toFixed(2);
             tooltip
               .transition()
-              .duration(200)
-              .style("opacity", 0.9);
+              .duration(200) // Smooth transition to visible
+              .style("opacity", 0.9); // Make tooltip visible
 
             tooltip
               .html(
                 `${d.data.genre}: ${d.data.meanPlaytime} hrs (${percentage}%)`
               )
-              .style("left", e.pageX + "px")
+              .style("left", e.pageX + "px") // Position tooltip
               .style("top", e.pageY - 28 + "px");
           })
           .on("mousemove", function (e) {
+            // Optional: Update position on move, if desired
             tooltip
               .style("left", e.pageX + "px")
               .style("top", e.pageY - 28 + "px");
           })
           .on("mouseout", function (d) {
-            tooltip.transition().duration(500).style("opacity", 0);
+            tooltip.transition().duration(500).style("opacity", 0); // Hide tooltip on mouse out
           });
 
         let legend = svg

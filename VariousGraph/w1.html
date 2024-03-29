@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Cloud</title>
+    <style>
+        /* CSS for styling */
+        text {
+            font-family: Impact, sans-serif;
+            fill: #000;
+        }
+    </style>
+</head>
+<body>
+    <div id="wordcloud"></div>
+
+    <!-- D3.js Script -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        // Read words from words.txt file
+        d3.text("words.txt").then(function(data) {
+            var words = data.split(',');
+
+            // Create a word cloud
+            d3.select("#wordcloud")
+                .selectAll("text")
+                .data(words)
+                .enter()
+                .append("text")
+                .style("font-size", function(d) { return Math.random() * 40 + "px"; }) // Random font size
+                .style("fill", function(d) {
+                    return "rgb(" + Math.floor(Math.random() * 256) + "," +
+                                    Math.floor(Math.random() * 256) + "," +
+                                    Math.floor(Math.random() * 256) + ")";
+                }) // Random color
+                .attr("x", function() { return Math.random() * window.innerWidth; })
+                .attr("y", function() { return Math.random() * window.innerHeight; })
+                .attr("text-anchor", "middle")
+                .text(function(d) { return d; });
+        });
+    </script>
+</body>
+</html>

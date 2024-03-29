@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Word Cloud</title>
     <!-- <link rel="stylesheet" href="styles.css" /> -->
-    <!-- Embedded Styles -->
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -38,7 +37,6 @@
         right: 0;
       }
     </style>
-    <!-- External CSS Libraries -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
@@ -49,7 +47,6 @@
     />
   </head>
   <body>
-    <!-- Header Section -->
     <header class="bg-light py-3">
       <div class="container d-flex align-items-center">
         <a href="../index.html">
@@ -60,7 +57,6 @@
             style="width: 50px"
           />
         </a>
-        <!-- Navigation Links -->
         <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
           >Price Vs Player</a
         >
@@ -74,18 +70,12 @@
         >
       </div>
     </header>
-    <!-- Main Content -->
     <h3 style="margin: 20px">Word cloud of Genres and Tags on Timeline</h3>
-    <!-- Word Cloud Container -->
     <div id="wordcloud"></div>
-    <!-- Slider Container -->
     <div id="slider-container">
-      <!-- Slider Input Element -->
       <input type="range" id="slider" min="0" max="9" step="1" />
-      <!-- Slider Labels -->
       <div id="slider-labels"></div>
     </div>
-    <!-- External JavaScript Libraries -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.7/build/d3.layout.cloud.js"></script>
     <script>
@@ -136,11 +126,12 @@
               wordCounts[word] = 1;
             }
           });
-
+          // console.log(wordCounts)
           // Convert wordCounts to array of objects
           var wordArray = Object.keys(wordCounts).map(function (word) {
             return { text: word, size: wordCounts[word] };
           });
+          console.log(wordArray);
 
           // Create the word cloud
           var layout = d3.layout
@@ -197,7 +188,6 @@
         });
       }
     </script>
-    <!-- Footer Section -->
     <footer class="footer bg-dark text-light py-3 mt-auto">
       <div class="container text-center">
         <div class="row">
@@ -210,7 +200,6 @@
         </div>
         <div class="row">
           <div class="col">
-            <!-- Creator Links -->
             <a
               href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
               class="text-white mr-4"
@@ -233,6 +222,7 @@
               ><i class="fab fa-linkedin"></i> Ishan</a
             >
             <!-- GitHub links -->
+
             <a href="https://github.com/Ishan-1" class="text-white"
               ><i class="fab fa-github"></i> Ishan</a
             >
