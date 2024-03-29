@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Cloud</title>
+    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      #wordcloud {
+        width: 800px;
+        height: 400px;
+        margin: 20px auto;
+      }
+
+      #slider-container {
+        width: 800px;
+        margin: 20px auto;
+        position: relative;
+      }
+
+      #slider {
+        width: 100%;
+      }
+
+      #slider-labels {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        bottom: -25px;
+        left: 0;
+        right: 0;
+      }
+    </style>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="bg-light py-3">
+      <div class="container d-flex align-items-center">
+        <a href="../index.html">
+          <img
+            src="../Images/logo.jpg"
+            alt="Logo"
+            class="mr-3"
+            style="width: 50px"
+          />
+        </a>
+        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
+          >Price Vs Player</a
+        >
+        <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
+        <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
+        <a class="nav-link" href="../VariousGraph/sector_chart.html"
+          >Genres Freq PlayTime</a
+        >
+      </div>
+    </header>
+    <h3 style="margin: 20px">Word cloud of Genres and Tags on Timeline</h3>
+    <div id="wordcloud"></div>
+    <div id="slider-container">
+      <input type="range" id="slider" min="0" max="9" step="1" />
+      <div id="slider-labels"></div>
+    </div>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.7/build/d3.layout.cloud.js"></script>
+    <script>
+      // Array of years and corresponding file names
+      var years = [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
+      var fileNames = [
+        "../Data/WordCloud/2011.txt",
+        "../Data/WordCloud/2012.txt",
+        "../Data/WordCloud/2013.txt",
+        "../Data/WordCloud/2014.txt",
+        "../Data/WordCloud/2015.txt",
+        "../Data/WordCloud/2016.txt",
+        "../Data/WordCloud/2017.txt",
+        "../Data/WordCloud/2018.txt",
+        "../Data/WordCloud/2019.txt",
+        "../Data/WordCloud/2020.txt",
+      ];
+
+      // Load the initial word cloud
+      loadWordCloud(fileNames[0]);
+
+      // Create the timeline slider
+      var slider = document.getElementById("slider");
+      var sliderLabels = document.getElementById("slider-labels");
+
+      sliderLabels.innerHTML = years
+        .map(function (year) {
+          return `<span>${year}</span>`;
+        })
+        .join("");
+
+      slider.addEventListener("input", function () {
+        var yearIndex = parseInt(this.value);
+        var fileName = fileNames[yearIndex];
+        loadWordCloud(fileName);
+      });
+
+      // Function to load word cloud from file
+      function loadWordCloud(fileName) {
+        d3.text(fileName).then(function (data) {
+          var words = data.split(/\s+/); // Split text into an array of words
+
+          // Count frequency of each word
+          var wordCounts = {};
+          words.forEach(function (word) {
+            if (wordCounts[word]) {
+              wordCounts[word]++;
+            } else {
+              wordCounts[word] = 1;
+            }
+          });
+
+          // Convert wordCounts to array of objects
+          var wordArray = Object.keys(wordCounts).map(function (word) {
+            return { text: word, size: wordCounts[word] };
+          });
+
+          // Create the word cloud
+          var layout = d3.layout
+            .cloud()
+            .size([800, 400]) // Size of the word cloud container
+            .words(wordArray)
+            .padding(5)
+            .rotate(function () {
+              return ~~(Math.random() * 2) * 90;
+            }) // Random rotation
+            .font("Impact")
+            .fontSize(function (d) {
+              return d.size * 10;
+            }) // Font size based on frequency
+            .on("end", draw);
+
+          layout.start();
+
+          // Draw the word cloud
+          function draw(words) {
+            d3.select("#wordcloud").html(""); // Clear previous word cloud
+            d3.select("#wordcloud")
+              .append("svg")
+              .attr("width", layout.size()[0])
+              .attr("height", layout.size()[1])
+              .append("g")
+              .attr(
+                "transform",
+                "translate(" +
+                  layout.size()[0] / 2 +
+                  "," +
+                  layout.size()[1] / 2 +
+                  ")"
+              )
+              .selectAll("text")
+              .data(words)
+              .enter()
+              .append("text")
+              .style("font-size", function (d) {
+                return d.size + "px";
+              })
+              .style("font-family", "Impact")
+              .style("fill", function (d, i) {
+                return d3.schemeCategory10[i % 10];
+              })
+              .attr("text-anchor", "middle")
+              .attr("transform", function (d) {
+                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+              })
+              .text(function (d) {
+                return d.text;
+              });
+          }
+        });
+      }
+    </script>
+    <footer class="footer bg-dark text-light py-3 mt-auto">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col">
+            <p class="text-white mt-3">
+              Made with <span style="color: #ffffff">&hearts;</span> By Harsh &
+              Divyansh & Ishan
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a
+              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Harsh</a
+            >
+            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Harsh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/divyansh"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Divyansh</a
+            >
+            <a href="https://github.com/divyansh" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Divyansh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Ishan</a
+            >
+            <!-- GitHub links -->
+
+            <a href="https://github.com/Ishan-1" class="text-white"
+              ><i class="fab fa-github"></i> Ishan</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
