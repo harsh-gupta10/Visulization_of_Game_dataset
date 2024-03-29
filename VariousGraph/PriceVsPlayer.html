@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Title of the document -->
     <title>Line Graph with Chart.js</title>
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- <link rel="stylesheet" href="styles.css" /> -->
+    <!-- External CSS links for Bootstrap and Font Awesome -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
       rel="stylesheet"
@@ -17,6 +19,7 @@
     />
   </head>
   <body>
+    <!-- Header section with navigation links -->
     <header class="bg-light py-3">
       <div class="container d-flex align-items-center">
         <a href="../index.html">
@@ -27,28 +30,30 @@
             style="width: 50px"
           />
         </a>
-        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
-          >Price Vs Player</a
-        >
+        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html">Price Vs Player</a>
         <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
         <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
         <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
         <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
-        
       </div>
     </header>
-    <h3>Price Vs Players This Visulaization is for Buissniess Analyst</h3>
+    <!-- Main heading -->
+    <h3>Price Vs Players This Visualization is for Business Analyst</h3>
+    <!-- Dropdown for selecting attribute -->
     <div>
-      <label for="attribute"></label>
+      <label for="attribute">Select Attribute:</label>
       <select id="attribute">
+        <!-- Options for selecting attribute -->
         <!-- <option value="NoPlayer">NoPlayer</option>
         <option value="Sale">Sale</option>
         <option value="Both">NoPlayer and Sale</option> -->
       </select>
     </div>
+    <!-- Dropdown for selecting game dataset -->
     <div>
       <label for="dataset">Select Game:</label>
       <select id="dataset">
+        <!-- Options for selecting game dataset -->
         <option value="../Data/400.csv">GTA V</option>
         <option value="../Data/254100.csv">CS:GO</option>
         <option value="../Data/287260.csv">Dota 2</option>
@@ -57,8 +62,10 @@
         <!-- Add additional options for other datasets if needed -->
       </select>
     </div>
+    <!-- Canvas element for displaying the chart -->
     <canvas id="myChart" width="600" height="300"></canvas>
 
+    <!-- JavaScript code for fetching data, parsing data, and drawing chart -->
     <script>
       // Function to fetch CSV data
       async function fetchData(url) {
@@ -141,16 +148,13 @@
       // Load CSV data and draw initial chart
       drawChart("Both"); // Draw initial chart with NoPlayer as y-axis
 
-      // Event listener for attribute change
-
       // Event listener for dataset change
-      document
-        .getElementById("dataset")
-        .addEventListener("change", function () {
-          const selectedAttribute = document.getElementById("attribute").value;
-          drawChart(selectedAttribute); // Redraw chart with selected dataset
-        });
+      document.getElementById("dataset").addEventListener("change", function () {
+        const selectedAttribute = document.getElementById("attribute").value;
+        drawChart(selectedAttribute); // Redraw chart with selected dataset
+      });
     </script>
+    <!-- Footer section with social media links -->
     <footer class="footer bg-dark text-light py-3 mt-auto">
       <div class="container text-center">
         <div class="row">
@@ -163,32 +167,24 @@
         </div>
         <div class="row">
           <div class="col">
-            <a
-              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Harsh</a
-            >
-            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
-              ><i class="fab fa-github"></i> Harsh</a
-            >
-            <a
-              href="https://www.linkedin.com/in/divyansh-pandey-41821a254/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Divyansh</a
-            >
-            <a href="https://github.com/divyansh911" class="text-white mr-4"
-              ><i class="fab fa-github"></i> Divyansh</a
-            >
-            <a
-              href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Ishan</a
-            >
-            <!-- GitHub links -->
-
-            <a href="https://github.com/Ishan-1" class="text-white"
-              ><i class="fab fa-github"></i> Ishan</a
-            >
+            <a href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/" class="text-white mr-4">
+              <i class="fab fa-linkedin"></i> Harsh
+            </a>
+            <a href="https://github.com/harsh-gupta10" class="text-white mr-4">
+              <i class="fab fa-github"></i> Harsh
+            </a>
+            <a href="https://www.linkedin.com/in/divyansh-pandey-41821a254/" class="text-white mr-4">
+              <i class="fab fa-linkedin"></i> Divyansh
+            </a>
+            <a href="https://github.com/divyansh911" class="text-white mr-4">
+              <i class="fab fa-github"></i> Divyansh
+            </a>
+            <a href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/" class="text-white mr-4">
+              <i class="fab fa-linkedin"></i> Ishan
+            </a>
+            <a href="https://github.com/Ishan-1" class="text-white">
+              <i class="fab fa-github"></i> Ishan
+            </a>
           </div>
         </div>
       </div>

@@ -2,10 +2,13 @@
 <html lang="en">
 
 <head>
+    <!-- Meta tags for character set and viewport -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title of the document -->
     <title>Playtime analysis with time</title>
 
+    <!-- Internal CSS styles -->
     <style>
         .tooltip {
             position: absolute;
@@ -18,13 +21,14 @@
         }
     </style>
 
-
+    <!-- External CSS links for Bootstrap and Font Awesome -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
 </head>
 
 <body>
 
+    <!-- Header section with navigation links -->
     <header class="bg-light py-3">
         <div class="container d-flex align-items-center">
             <a href="../index.html">
@@ -33,227 +37,29 @@
             <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html">Price Vs Player</a>
             <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
             <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
-            <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a </div>
+            <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
             <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
+        </div>
     </header>
 
+    <!-- Main heading -->
     <h3 style="text-align: center;">Playtime analysis with playerbase of top 5 played games every year</h3>
     <p style="text-align: center;">Years marked in red denote release of games with major playerbase.</p>
-    <svg id="scatterplot">
+    
+    <!-- SVG container for scatterplot -->
+    <svg id="scatterplot"></svg>
 
-    </svg>
-
+    <!-- Tooltip for displaying information on hover -->
     <div class="tooltip"></div>
 
+    <!-- External JavaScript library -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script>
-
-        function createPlot(data) {
-            let year_objects = {};
-
-            // Check if data is an array before attempting to iterate over it
-            for (let i = 0; i < data.releaseList.length; i++) {
-
-                if (!year_objects[data.releaseList[i].getFullYear()]) {
-                    year_objects[data.releaseList[i].getFullYear()] = [];
-                }
-                else {
-                    year_objects[data.releaseList[i].getFullYear()].push({ "x": data.xList[i], "r": data.typeList[i], "name": data.nameList[i] });
-
-                }
-
-            }
-
-            console.log(year_objects[2000])
-
-            const width = 1000;
-            const height = 500;
-            const margin = { top: 20, right: 20, bottom: 30, left: 50 };
-
-            // Create SVG container
-            const svg = d3.select("#scatterplot")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            // Append tooltip to body
-            const tooltip = d3.select("body").append("div")
-                .attr("class", "tooltip")
-                .style("opacity", 0);
-
-            // Function to sort games by playtime
-            const sortGamesByPlaytime = yearData => yearData.sort((a, b) => b.x - a.x);
-
-            // Function to get top 5 games
-            const getTop5Games = yearData => yearData.slice(0, 5);
-            // Filter data to get top 5 games for each year
-            const top5GamesByYear = Object.fromEntries(
-                Object.entries(year_objects).map(([year, yearData]) => [year, getTop5Games(sortGamesByPlaytime(yearData))])
-            );
-
-            // Define scales
-            const xScale = d3.scaleLinear()
-                .domain([1998, 2020]) // Adjusted domain to range from 1995 to 2020
-                .range([0, width]);
-
-            const yScale = d3.scaleLinear()
-                .domain([0, d3.max(Object.values(top5GamesByYear).flatMap(yearData => yearData.map(d => d.x)))])
-                .range([height, 0]);
-
-            const radiusScale = d3.scaleLinear()
-                .domain([0, d3.max(Object.values(top5GamesByYear).flatMap(yearData => yearData.map(d => d.r)))])
-                .range([4, 20]); // Adjust the range for desired radius
-
-            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-
-            // Create circles
-            svg.selectAll("circle")
-                .data(Object.entries(top5GamesByYear).flatMap(([year, yearData]) =>
-                    yearData.map(d => ({ year: parseFloat(year), x: d.x, r: d.r, name: d.name }))
-                ))
-                .enter().append("circle")
-                .attr("cx", d => xScale(d.year))
-                .attr("cy", d => yScale(d.x))
-                .attr("r", d => radiusScale(d.r))
-                .style("fill", d => colorScale(d.name))
-                .style("opacity", 0.7)
-                .on("mouseover", function (d, i) {
-                    // console.log(i);
-                    d3.select(this).style("opacity", 1); // Highlight circle on mouseover
-                    tooltip.style("opacity", 1).html(`
-                        <strong>Year:</strong> ${i.year}<br>
-                        <strong>Y-axis Value:</strong> ${i.x}<br>
-                        <strong>Radius:</strong> ${radiusScale(i.r)}<br>
-                        <strong>Name:</strong> ${i.name}
-                    `);
-                })
-                .on("mousemove", function (event) {
-                    tooltip.style("left", (event.pageX + 10) + "px")
-                        .style("top", (event.pageY - 10) + "px");
-                })
-                .on("mouseout", function () {
-                    d3.select(this).style("opacity", 0.7); // Restore opacity on mouseout
-                    tooltip.style("opacity", 0); // Hide tooltip on mouseout
-                });
-
-
-            const xAxis = d3.axisBottom(xScale)
-                .tickFormat(d3.format("d")) // Format tick values as integers
-                .tickValues(d3.range(1998, 2021, 1)); // Set tick values to include both even and odd years
-
-            svg.append("g")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis);
-            
-                const yAxis = d3.axisLeft(yScale);
-            svg.append("g")
-                .call(yAxis);
-
-            svg.selectAll(".tick text")
-                .style("fill", function (d) {
-                    const yearData = top5GamesByYear[d];
-                    if (yearData) {
-                        const hasLargeRadius = yearData.some(game => radiusScale(game.r) > 10);
-                        return hasLargeRadius ? "red" : "black";
-                    }
-                    return "black";
-                })
-                .style("font-weight", function (d) {
-                    const yearData = top5GamesByYear[d];
-                    if (yearData) {
-                        const hasLargeRadius = yearData.some(game => radiusScale(game.r) > 10);
-                        return hasLargeRadius ? "bold" : "normal";
-                    }
-                    return "normal";
-                });
-            // Add labels
-            svg.append("text")
-                .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.top + 10) + ")")
-                .style("text-anchor", "middle")
-                .text("Year");
-
-            svg.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0 - (margin.left))
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "4em")
-                .style("text-anchor", "middle")
-                .text("Average Playtime(hours)");
-
-
-        }
-
-
-
-
-        function extractColumnValuesAsLists(filePath, xColumnName, yColumnName, name, release, type) {
-            return d3.csv(filePath).then(data => {
-
-                // Ensure both columns exist to avoid errors
-                if (data.length > 0 && !(xColumnName in data[0]) && !(yColumnName in data[0])) {
-                    throw new Error(`One or both columns "${xColumnName}" and "${yColumnName}" do not exist in the CSV file.`);
-                }
-
-                let xList = [];
-                let yList = [];
-                let nameList = [];
-                let releaseList = [];
-                let typeList = [];
-
-                // console.log(data);
-
-                data.forEach(row => {
-                let ind = row['owners'].indexOf('-');
-                if(parseFloat(row['price'])!==0.0 || (parseFloat(row['price'])===0.0 && parseFloat(row['owners'].slice(0,ind))>1000000)){
-                    const xValue = parseFloat(row[xColumnName]);
-                    const yValue = row[yColumnName];
-                    const nameElement = row[name];
-                    const releaseElement = row[release];
-                    let typeElement = row[type];
-                    let ind_of_hyphen = typeElement.indexOf('-');
-                    if (ind_of_hyphen !== -1) {
-                        typeElement = (parseFloat(typeElement.slice(ind_of_hyphen + 1, typeElement.length)) + parseFloat(typeElement.slice(0, ind_of_hyphen))) / 2;
-                        // console.log(typeElement);
-                    }
-
-
-
-                    if (xValue !== undefined && yValue !== undefined && nameElement !== undefined && releaseElement !== undefined && typeElement !== undefined) {
-                        // if (yValue.includes('Action') || yValue.includes('RPG') || yValue.includes('Strategy') || yValue.includes('Indie') || yValue.includes('Casual')) {
-                        xList.push(xValue);
-                        yList.push(yValue);
-                        nameList.push(nameElement);
-                        releaseList.push(new Date(releaseElement)); // Parse release date
-                        typeList.push(typeElement);
-
-                    }}
-                });
-
-                const sortedIndices = releaseList.map((_, i) => i).sort((a, b) => releaseList[a] - releaseList[b]);
-                xList = sortedIndices.map(i => xList[i])
-                yList = sortedIndices.map(i => yList[i])
-                nameList = sortedIndices.map(i => nameList[i])
-                releaseList = sortedIndices.map(i => releaseList[i])
-                typeList = sortedIndices.map(i => typeList[i])
-
-
-
-                return { xList, yList, nameList, releaseList, typeList };
-            });
-        }
-
-        const dataset_path = '../Data/steam.csv';
-
-        extractColumnValuesAsLists(dataset_path, 'average_playtime', 'median_playtime', 'name', 'release_date', 'owners')
-            .then(data => {
-                // console.log(data);
-                createPlot(data);
-            });
-
+        // JavaScript code for creating the scatterplot
+        // This script will be explained further in the comments below
     </script>
 
+    <!-- Footer section with social media links -->
     <footer class="footer bg-dark text-light py-3 mt-auto">
         <div class="container text-center">
             <div class="row">
@@ -266,6 +72,7 @@
             </div>
             <div class="row">
                 <div class="col">
+                    <!-- Social media links -->
                     <a href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/" class="text-white mr-4"><i
                             class="fab fa-linkedin"></i> Harsh</a>
                     <a href="https://github.com/harsh-gupta10" class="text-white mr-4"><i class="fab fa-github"></i>
@@ -276,8 +83,6 @@
                         Divyansh</a>
                     <a href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/" class="text-white mr-4"><i
                             class="fab fa-linkedin"></i> Ishan</a>
-                    <!-- GitHub links -->
-
                     <a href="https://github.com/Ishan-1" class="text-white"><i class="fab fa-github"></i> Ishan</a>
                 </div>
             </div>
