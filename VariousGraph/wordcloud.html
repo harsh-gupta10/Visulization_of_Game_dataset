@@ -65,7 +65,9 @@
         <a class="nav-link" href="../VariousGraph/sector_chart.html"
           >Genres Freq PlayTime</a
         >
-        <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
+        <a class="nav-link" href="../VariousGraph/playtime.html"
+          >Playtime Analysis</a
+        >
       </div>
     </header>
     <h3 style="margin: 20px">Word cloud of Genres and Tags on Timeline</h3>
@@ -91,7 +93,6 @@
         "../Data/WordCloud/2019.txt",
         "../Data/WordCloud/2020.txt",
       ];
-
       // Load the initial word cloud
       loadWordCloud(fileNames[0]);
 
@@ -125,11 +126,12 @@
               wordCounts[word] = 1;
             }
           });
-
+          // console.log(wordCounts)
           // Convert wordCounts to array of objects
           var wordArray = Object.keys(wordCounts).map(function (word) {
             return { text: word, size: wordCounts[word] };
           });
+          console.log(wordArray);
 
           // Create the word cloud
           var layout = d3.layout
