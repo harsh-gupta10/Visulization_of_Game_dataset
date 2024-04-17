@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Critics VS User Score</title>
+  <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      rel="stylesheet"
+    />
+  <!-- Include Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+      <header class="bg-light py-3">
+      <div class="container d-flex align-items-center">
+        <a href="../index.html">
+          <img
+            src="../Images/logo.jpg"
+            alt="Logo"
+            class="mr-3"
+            style="width: 50px"
+          />
+        </a>
+        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
+          >Price Vs Player</a
+        >
+        <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
+        <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
+        <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
+        <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
+        
+      </div>
+    </header>
+  <h3 style="margin-left: 10%;">Critics Score VS User Score</h3>
+  <div id="scatter-plot"></div>
+
+  <script>
+    // Load data from CSV
+    Plotly.d3.csv('../Data/critics2.csv', function(err, data) {
+      if (err) throw err;
+
+      // Extracting data for plotting
+      var xData = data.map(row => parseFloat(row.Normalized_User_Score));
+      var yData = data.map(row => parseFloat(row.Normalized_Critic_Score));
+      var textData = data.map(row => row.Name);
+
+      // Create trace for scatter plot
+      var trace = {
+        x: xData,
+        y: yData,
+        mode: 'markers',
+        type: 'scatter',
+        text: textData,
+        marker: {
+          size: 6,
+          opacity: 0.8
+        }
+      };
+
+      // Define layout
+      var layout = {
+        xaxis: {
+          title: 'User Score',
+          tickformat: '.4f' // Display up to 2 decimal places
+        },
+        yaxis: {
+          title: 'Critic Score',
+          tickformat: '.4f' // Display up to 2 decimal places
+        }
+      };
+
+      // Plot the graph
+      Plotly.newPlot('scatter-plot', [trace], layout);
+    });
+  </script>
+  <footer class="footer bg-dark text-light py-3 mt-auto">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col">
+            <p class="text-white mt-3">
+              Made with <span style="color: #ffffff">&hearts;</span> By Harsh &
+              Divyansh & Ishan
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a
+              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Harsh</a
+            >
+            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Harsh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/divyansh-pandey-41821a254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Divyansh</a
+            >
+            <a href="https://github.com/divyansh911" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Divyansh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Ishan</a
+            >
+            <!-- GitHub links -->
+            <a href="https://github.com/Ishan-1" class="text-white"
+              ><i class="fab fa-github"></i> Ishan</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+</body>
+</html>

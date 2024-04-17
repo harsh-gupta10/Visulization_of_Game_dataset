@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Market Share</title>
+        <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .chart-container {
+        width: 600px; /* Adjust width as needed */
+        height: 600px; /* Adjust height as needed */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto; /* Add this line for horizontal centering */
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bg-light py-3">
+      <div class="container d-flex align-items-center">
+        <a href="../index.html">
+          <img
+            src="../Images/logo.jpg"
+            alt="Logo"
+            class="mr-3"
+            style="width: 50px"
+          />
+        </a>
+        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
+          >Price Vs Player</a
+        >
+        <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
+        <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
+        <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
+        <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
+        
+      </div>
+    </header>
+    <h2 style="margin-left: 10%;margin-bottom: 4%;">Every value is in Million</h2>
+    
+    <div class="chart-container">
+      <canvas id="myChart"></canvas>
+    </div>
+    
+    <script>
+      // Data
+      const data = {
+        labels: ["PS2", "X360", "PS3", "WII", "DS", "PS4", "XBOX", "PS", "PC", "XOne"],
+        datasets: [
+          {
+            data: [945, 853, 784, 658, 382, 243, 212, 206, 187, 129], // Sample data with increasing values
+            backgroundColor: ["teal", "indigo", "olive", "salmon", "sienna", "darkorange", "mediumslateblue", "darkseagreen", "saddlebrown", "darkturquoise"],
+          },
+        ],
+      };
+
+      // Configuration
+      const config = {
+        type: "pie",
+        data: data,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      };
+
+      // Create the chart
+      const myChart = new Chart(document.getElementById("myChart"), config);
+    </script>
+    <footer class="footer bg-dark text-light py-3 mt-auto">
+      <div class="container text-center">
+        <div class="row">
+          <div class="col">
+            <p class="text-white mt-3">
+              Made with <span style="color: #ffffff">&hearts;</span> By Harsh &
+              Divyansh & Ishan
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <a
+              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Harsh</a
+            >
+            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Harsh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/divyansh-pandey-41821a254/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Divyansh</a
+            >
+            <a href="https://github.com/divyansh911" class="text-white mr-4"
+              ><i class="fab fa-github"></i> Divyansh</a
+            >
+            <a
+              href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/"
+              class="text-white mr-4"
+              ><i class="fab fa-linkedin"></i> Ishan</a
+            >
+            <!-- GitHub links -->
+            <a href="https://github.com/Ishan-1" class="text-white"
+              ><i class="fab fa-github"></i> Ishan</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
