@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <style>
+    path {
+            stroke: black;
+            stroke-width: 0.8;
+        }
+    #legend div {
+     padding: 5px;
+     margin: 5px;
+     border: 1px solid #ccc;
+     display: inline-block;
+   }
+  </style>
+  <body>
+    <svg></svg>
+    <div id="legend"></div>
+    <input type="range" id="year-slider" min="1980" max="2020" step="1" />
+    <script>
+      const countryRegionMap = {
+    "Canada": "NA",
+    "The Bahamas": "NA",
+    "Dominican Republic": "NA",
+    "USA": "NA",
+    "Mexico": "NA",
+    "Greenland": "NA",
+    "Bermuda": "NA",
+    "Saint Pierre and Miquelon": "NA",
+    "Puerto Rico": "NA",
+    "Barbados": "NA",
+    "Trinidad and Tobago": "NA",
+    "Dominica": "NA",
+    "Saint Lucia": "NA",
+    "Antigua and Barbuda": "NA",
+    "Saint Kitts and Nevis": "NA",
+    "Grenada": "NA",
+    "Saint Vincent and the Grenadines": "NA",
+    "Belize": "NA",
+    "Costa Rica": "NA",
+    "Panama": "NA",
+    "Albania": "EU",
+    "Andorra": "EU",
+    "Austria": "EU",
+    "Belarus": "EU",
+    "Belgium": "EU",
+    "Bosnia and Herzegovina": "EU",
+    "Bulgaria": "EU",
+    "Croatia": "EU",
+    "Cyprus": "EU",
+    "Northern Cyprus": "EU",
+    "Czech Republic": "EU",
+    "Denmark": "EU",
+    "Estonia": "EU",
+    "Finland": "EU",
+    "France": "EU",
+    "Germany": "EU",
+    "Greece": "EU",
+    "Hungary": "EU",
+    "Iceland": "EU",
+    "Ireland": "EU",
+    "Italy": "EU",
+    "Kosovo": "EU",
+    "Latvia": "EU",
+    "Liechtenstein": "EU",
+    "Lithuania": "EU",
+    "Luxembourg": "EU",
+    "Malta": "EU",
+    "Moldova": "EU",
+    "Monaco": "EU",
+    "Montenegro": "EU",
+    "Netherlands": "EU",
+    "Macedonia": "EU",
+    "Norway": "EU",
+    "Poland": "EU",
+    "Portugal": "EU",
+    "Romania": "EU",
+    "Russia": "EU",
+    "San Marino": "EU",
+    "Serbia": "EU",
+    "Slovakia": "EU",
+    "Slovenia": "EU",
+    "Spain": "EU",
+    "Sweden": "EU",
+    "Switzerland": "EU",
+    "Ukraine": "EU",
+    "England": "EU",
+    "Vatican City": "EU",
+    "Japan": "JP"
+};
+// Define color scales for each region
+const colorScales = {
+  "NA": d3.scaleLinear().range(["#FFCCCC", "#FF0000"]),
+  "EU": d3.scaleLinear().range(["#CCCCFF", "#0000FF"]),
+  "JP": d3.scaleLinear().range(["#CCFFCC", "#00FF00"]),
+  "Other": d3.scaleLinear().range(["#FFFFCC", "#FFFF00"])
+};
+
+
+
+
+      Promise.all([
+        d3.json("https://enjalot.github.io/wwsd/data/world/world-110m.geojson"),
+        d3.csv("../Data/video_games_sales.csv"), // Adjust the path to your CSV file
+      ]).then(function ([geoData, data]) {
+        // Correctly parse the data
+        data.forEach((d) => {
+          d.Year = +d.Year_of_Release;
+          d.NA_Sales = +d.NA_Sales;
+          d.EU_Sales = +d.EU_Sales;
+          d.JP_Sales = +d.JP_Sales;
+          d.Other_Sales = +d.Other_Sales;
+        });
+
+        // Group and sum sales by year and region using array.reduce
+        const salesByYearRegion = data.reduce((acc, d) => {
+          if (!acc[d.Year]) {
+            acc[d.Year] = {
+              NA_Sales: 0,
+              EU_Sales: 0,
+              JP_Sales: 0,
+              Other_Sales: 0,
+            };
+          }
+          acc[d.Year].NA_Sales += d.NA_Sales;
+          acc[d.Year].EU_Sales += d.EU_Sales;
+          acc[d.Year].JP_Sales += d.JP_Sales;
+          acc[d.Year].Other_Sales += d.Other_Sales;
+          return acc;
+        }, {});
+
+        // Define SVG and geographic path
+        var svg = d3.select("svg").attr("width", 960).attr("height", 500);
+        var path = d3.geoPath();
+
+        console.log(salesByYearRegion)
+
+        // Draw each country as a path
+        const projection = d3.geoNaturalEarth1();
+       const pathGenerator = d3.geoPath().projection(projection);
+
+        svg
+          .selectAll(".region")
+          .data(geoData.features)
+          .enter()
+          .append("path")
+          .attr("d", pathGenerator)
+          .attr("class", "region")
+          .style("fill", (d) => determineColor(1980, d.properties.name)); // Initialize with 1980 or the earliest year available
+
+          d3.select("#year-slider").on("input", function () {
+  updateMap(this.value);
+});
+
+
+// Update function when slider changes
+d3.select("#year-slider").on("input", function () {
+  updateMap(this.value);
+  updateLegend(this.value);
+});
+
+function updateMap(year) {
+  const yearData = salesByYearRegion[year];
+  if (!yearData) return; // Exit if no data for the year
+
+  // Update max values for color scales
+  Object.keys(colorScales).forEach(region => {
+    const maxSales = Math.max(...Object.values(salesByYearRegion).map(d => d[region + "_Sales"]));
+    colorScales[region].domain([0, maxSales]);
+  });
+
+  svg
+    .selectAll(".region")
+    .transition()
+    .duration(500)
+    .style("fill", (d) => determineColor(year, d.properties.name));
+}
+
+function determineColor(year, countryName) {
+  const region = countryRegionMap[countryName] || "Other";
+  const yearData = salesByYearRegion[year];
+  if (!yearData) return "black"; // Return black if no data for the year
+  return colorScales[region](yearData[region + "_Sales"]);
+}
+
+function updateLegend(year) {
+  const legend = d3.select("#legend").selectAll("div")
+    .data(Object.keys(colorScales));
+
+  legend.exit().remove();  // Remove unused legend entries
+
+  const legendEnter = legend.enter().append("div");
+
+  legendEnter.merge(legend)
+    .html(region => {
+      const maxSales = Math.max(...Object.values(salesByYearRegion).map(d => d[region + "_Sales"]));
+      return `${region}: up to ${maxSales.toFixed(2)} millions`;
+    })
+    .style("color", region => colorScales[region](colorScales[region].domain()[1])); // Use the highest color of the range
+}
+  const initialYear = 1980; // Change according to your data availability
+  updateMap(initialYear);
+  updateLegend(initialYear);
+});
+    </script>
+  </body>
+</html>
