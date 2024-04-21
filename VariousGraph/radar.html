@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Game comparison</title>
+    <style>
+        canvas#chartId {
+            align-items: center;
+            margin: auto;
+            width: 100%; /* Adjust width as needed */
+            height: auto; /* Adjust height as needed */
+            border: 1px solid #ccc; /* Add border if desired */
+            margin-top: 20px; /* Example margin */
+            background-color: #f5f5f5; /* Example background color */
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Competitor game comparison for developers.</h1>
+    <canvas id="chartId" aria-label="chart" height="350" width="580"></canvas>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.1/chart.min.js"></script>
+    <script>
+        var chrt = document.getElementById("chartId").getContext("2d");
+    
+        function getBinnedValue(value, min, max, binCount) {
+            var binSize = (max - min) / binCount;
+            var binIndex = Math.floor((value - min) / binSize);
+            return binIndex;
+        }
+
+        d3.csv("../Data/clean_steam.csv", function (data) {
+            console.log(data[7]);
+
+            const labels = ['positive_ratings(per 10k users)',
+                'negative_ratings(per 10k users)', 'average_playtime(per 1000 hrs)','price(in Dollar)','owners(per 2M)'
+            ]
+            var data_values = [];
+            var data_values_two = [];
+            var data_values_three = [];
+            data.forEach(function (d) {
+                if (d['name'] == 'Counter-Strike: Global Offensive') {
+
+                    owners = d['owners'].split('-');
+                    owners = (parseFloat(owners[0]) + parseFloat(owners[1])) / 2000000;
+                    // console.log(owners);
+
+                    console.log(d);
+                    data_values_two = [
+                        d['positive_ratings']/10000,
+                        d['negative_ratings']/10000,
+                        d['average_playtime']/1000,
+                        d['price'],owners
+                    ]
+                } else if (d['name'] == 'PLAYERUNKNOWN\'S BATTLEGROUNDS') {
+                    console.log(d);
+                    owners = d['owners'].split('-');
+                    owners = (parseFloat(owners[0]) + parseFloat(owners[1])) / 2000000;
+                    // console.log(owners);
+                    data_values = [
+                        d['positive_ratings']/10000,
+                        d['negative_ratings']/10000,
+                        d['average_playtime']/1000,
+                        d['price'],owners
+                    ]
+                }
+                else if(d['name'] == 'Call of Duty® 4: Modern Warfare®'){
+                    owners = d['owners'].split('-');
+                    owners = (parseFloat(owners[0]) + parseFloat(owners[1])) / 2000000;
+                    data_values_three = [
+                        d['positive_ratings']/10000,
+                        d['negative_ratings']/10000,
+                        d['average_playtime']/1000,
+                        d['price'],
+                        owners
+                    ]
+                }
+            })
+            console.log(data_values_two);
+            console.log(data_values);
+            var chartId = new Chart(chrt, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                            label: "CS:GO",
+                            data: data_values_two,
+                            backgroundColor: ['rgba(211, 211, 211, 0.5)'], // Adjusted transparency
+                            pointBackgroundColor: ['yellow', 'aqua', 'pink', 'lightgreen', 'lightblue', 'gold'],
+                            borderColor: ['black'],
+                            borderWidth: 1,
+                            pointRadius: 6,
+                        },
+                        {
+                            label: "PUBG",
+                            data: data_values,
+                            backgroundColor: ['rgba(0, 0, 255, 0.5)'], // Adjusted transparency
+                            pointBackgroundColor: ['yellow', 'aqua', 'pink', 'lightgreen', 'lightblue', 'gold'],
+                            borderColor: ['black'],
+                            borderWidth: 1,
+                            pointRadius: 6,
+
+                        },
+                        {
+                            label : "COD MW",
+                            data : data_values_three,
+                            backgroundColor: ['rgba(0, 255, 0, 0.5)'], // Adjusted transparency
+                            pointBackgroundColor: ['yellow', 'aqua', 'pink', 'lightgreen', 'lightblue', 'gold'],
+                            borderColor: ['black'],
+                            borderWidth: 1,
+                            pointRadius: 6,
+                        }
+                    ],
+                },
+                options: {
+                    responsive: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    }
+                },
+            });
+
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
