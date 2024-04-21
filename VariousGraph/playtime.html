@@ -16,6 +16,32 @@
             pointer-events: none;
             opacity: 0;
         }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            border-radius: 50%;
+        }
+
+        #scatterplot {
+            /* Add your styles here */
+            border: 1px solid black;
+            background-color: #f0f0f0;
+            margin: auto;
+        }
     </style>
 
 
@@ -58,16 +84,16 @@
                     year_objects[data.releaseList[i].getFullYear()] = [];
                 }
                 else {
-                    year_objects[data.releaseList[i].getFullYear()].push({ "x": data.xList[i], "r": data.typeList[i], "name": data.nameList[i] });
+                    year_objects[data.releaseList[i].getFullYear()].push({ "x": data.xList[i], "r": data.typeList[i], "name": data.nameList[i], "price": data.priceList[i], "year": data.releaseList[i].getFullYear() });
 
                 }
 
             }
 
-            console.log(year_objects[2000])
+            // console.log(year_objects[2000])
 
-            const width = 1000;
-            const height = 500;
+            const width = 1200;
+            const height = 700;
             const margin = { top: 20, right: 20, bottom: 30, left: 50 };
 
             // Create SVG container
@@ -91,7 +117,26 @@
             const top5GamesByYear = Object.fromEntries(
                 Object.entries(year_objects).map(([year, yearData]) => [year, getTop5Games(sortGamesByPlaytime(yearData))])
             );
+            const maxradiuslist = [];
+            // console.log(top5GamesByYear);
 
+            Object.values(top5GamesByYear).forEach(yearData => {
+                var max = -1;
+                var x, y;
+                console.log(yearData);
+                yearData.forEach(game => {
+                    if (game.r > max) {
+                        max = game.r;
+                        x = game.year;
+                        y = game.x;
+
+                    }
+                    maxradiuslist.push({ x: x, y: y, r: max });
+                });
+
+            });
+
+            console.log(maxradiuslist);
             // Define scales
             const xScale = d3.scaleLinear()
                 .domain([1998, 2020]) // Adjusted domain to range from 1995 to 2020
@@ -105,19 +150,25 @@
                 .domain([0, d3.max(Object.values(top5GamesByYear).flatMap(yearData => yearData.map(d => d.r)))])
                 .range([4, 20]); // Adjust the range for desired radius
 
-            const colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+            const priceExtent = d3.extent(Object.values(top5GamesByYear).flatMap(yearData => yearData.map(d => d.price))); // Compute the extent of prices
+            const colorScale = d3.scaleQuantize()
+                .domain(priceExtent)
+                .range(["blue", "yellow", "red"]);
 
 
             // Create circles
             svg.selectAll("circle")
                 .data(Object.entries(top5GamesByYear).flatMap(([year, yearData]) =>
-                    yearData.map(d => ({ year: parseFloat(year), x: d.x, r: d.r, name: d.name }))
+                    yearData.map(d => ({ year: parseFloat(year), x: d.x, r: d.r, name: d.name, price: d.price }))
                 ))
                 .enter().append("circle")
                 .attr("cx", d => xScale(d.year))
                 .attr("cy", d => yScale(d.x))
                 .attr("r", d => radiusScale(d.r))
-                .style("fill", d => colorScale(d.name))
+                .style("fill", function (d) {
+                    // console.log(colorScale(d.price));
+                    return colorScale(d.price);
+                })
                 .style("opacity", 0.7)
                 .on("mouseover", function (d, i) {
                     // console.log(i);
@@ -146,8 +197,8 @@
             svg.append("g")
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
-            
-                const yAxis = d3.axisLeft(yScale);
+
+            const yAxis = d3.axisLeft(yScale);
             svg.append("g")
                 .call(yAxis);
 
@@ -201,34 +252,40 @@
                 let nameList = [];
                 let releaseList = [];
                 let typeList = [];
+                let priceList = [];
 
                 // console.log(data);
 
                 data.forEach(row => {
-                let ind = row['owners'].indexOf('-');
-                if(parseFloat(row['price'])!==0.0 || (parseFloat(row['price'])===0.0 && parseFloat(row['owners'].slice(0,ind))>1000000)){
-                    const xValue = parseFloat(row[xColumnName]);
-                    const yValue = row[yColumnName];
-                    const nameElement = row[name];
-                    const releaseElement = row[release];
-                    let typeElement = row[type];
-                    let ind_of_hyphen = typeElement.indexOf('-');
-                    if (ind_of_hyphen !== -1) {
-                        typeElement = (parseFloat(typeElement.slice(ind_of_hyphen + 1, typeElement.length)) + parseFloat(typeElement.slice(0, ind_of_hyphen))) / 2;
-                        // console.log(typeElement);
+                    let ind = row['owners'].indexOf('-');
+                    if (parseFloat(row['price']) !== 0.0 || (parseFloat(row['price']) === 0.0 && parseFloat(row['owners'].slice(0, ind)) > 1000000)) {
+                        const xValue = parseFloat(row[xColumnName]);
+                        const yValue = row[yColumnName];
+                        const nameElement = row[name];
+                        const releaseElement = row[release];
+                        let typeElement = row[type];
+                        let ind_of_hyphen = typeElement.indexOf('-');
+                        const priceElement = parseFloat(row['price']);
+
+                        if (ind_of_hyphen !== -1) {
+                            typeElement = (parseFloat(typeElement.slice(ind_of_hyphen + 1, typeElement.length)) + parseFloat(typeElement.slice(0, ind_of_hyphen))) / 2;
+                            // console.log(typeElement);
+                        }
+
+
+
+                        if (xValue !== undefined && yValue !== undefined && nameElement !== undefined && releaseElement !== undefined && typeElement !== undefined) {
+                            // if (yValue.includes('Action') || yValue.includes('RPG') || yValue.includes('Strategy') || yValue.includes('Indie') || yValue.includes('Casual')) {
+                            xList.push(xValue);
+                            yList.push(yValue);
+                            nameList.push(nameElement);
+                            releaseList.push(new Date(releaseElement)); // Parse release date
+                            typeList.push(typeElement);
+                            priceList.push(priceElement);
+
+
+                        }
                     }
-
-
-
-                    if (xValue !== undefined && yValue !== undefined && nameElement !== undefined && releaseElement !== undefined && typeElement !== undefined) {
-                        // if (yValue.includes('Action') || yValue.includes('RPG') || yValue.includes('Strategy') || yValue.includes('Indie') || yValue.includes('Casual')) {
-                        xList.push(xValue);
-                        yList.push(yValue);
-                        nameList.push(nameElement);
-                        releaseList.push(new Date(releaseElement)); // Parse release date
-                        typeList.push(typeElement);
-
-                    }}
                 });
 
                 const sortedIndices = releaseList.map((_, i) => i).sort((a, b) => releaseList[a] - releaseList[b]);
@@ -237,14 +294,14 @@
                 nameList = sortedIndices.map(i => nameList[i])
                 releaseList = sortedIndices.map(i => releaseList[i])
                 typeList = sortedIndices.map(i => typeList[i])
+                priceList = sortedIndices.map(i => priceList[i])
 
 
-
-                return { xList, yList, nameList, releaseList, typeList };
+                return { xList, yList, nameList, releaseList, typeList, priceList };
             });
         }
 
-        const dataset_path = '../Data/steam.csv';
+        const dataset_path = '../Data/clean_steam.csv';
 
         extractColumnValuesAsLists(dataset_path, 'average_playtime', 'median_playtime', 'name', 'release_date', 'owners')
             .then(data => {
@@ -253,6 +310,22 @@
             });
 
     </script>
+
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: red;"></div>
+            <div>High Price</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: yellow;"></div>
+            <div>Medium Price</div>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: blue;"></div>
+            <div>Low Price</div>
+        </div>
+    </div>
 
     <footer class="footer bg-dark text-light py-3 mt-auto">
         <div class="container text-center">
