@@ -38,9 +38,11 @@
 
         #scatterplot {
             /* Add your styles here */
+            margin-left:25%;
+            margin-right:25%;
             border: 1px solid black;
             background-color: #f0f0f0;
-            margin: auto;
+            /* margin: auto; */
         }
     </style>
 
@@ -52,8 +54,8 @@
 <body>
 
     
-
-    <h3 style="text-align: center;">Playtime analysis with playerbase of top 5 played games every year</h3>
+    <br>
+    <h3 style="text-align: center;"><b>Playtime analysis with playerbase of top 5 played games every year</b></h3>
     <p style="text-align: center;">Years marked in red denote release of games with major playerbase.</p>
     <svg id="scatterplot">
 
@@ -143,7 +145,7 @@
             const priceExtent = d3.extent(Object.values(top5GamesByYear).flatMap(yearData => yearData.map(d => d.price))); // Compute the extent of prices
             const colorScale = d3.scaleQuantize()
                 .domain(priceExtent)
-                .range(["blue", "yellow", "red"]);
+                .range(["blue", "orange", "red"]);
 
 
             // Create circles

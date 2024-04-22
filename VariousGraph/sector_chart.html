@@ -27,12 +27,19 @@
         opacity: 0; /* Start hidden */
         transition: opacity 0.3s;
       }
+      svg{
+        margin-left: 20%;
+        
+        /* margin-right: %; */
+        border: 1px solid black;
+      }
     </style>
   </head>
   <body>
     
-    <h3 style="text-align: center;">Genres with their frequency and average playtime</h3>
-    
+    <h1 style="text-align: center;"><b>Genres with their frequency and average playtime</b></h1>
+    <br>
+    <br>
     <svg></svg>
     
     
@@ -66,7 +73,7 @@
         let svg = d3
           .select("svg")
           
-          .attr("width", 1200)
+          .attr("width", 1500)
           .attr("height", 900)
           .append("g")
           .attr("transform", "translate(750,500)");
