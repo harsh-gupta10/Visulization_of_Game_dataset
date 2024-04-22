@@ -31,6 +31,15 @@
         pointer-events: none;
         opacity: 0;
       }
+      .annotation-rect {
+        fill: white;
+        stroke: black;
+        stroke-width: 1;
+      }
+      .annotation-text {
+        font: 12px sans-serif;
+        fill: black;
+      }
     </style>
   </head>
   <body>
@@ -48,89 +57,152 @@
         });
 
         // Set dimensions and margins
-        const margin = {top: 30, right: 30, bottom: 70, left: 60};
-        const width = 1200 - margin.left - margin.right;
+        const margin = { top: 30, right: 30, bottom: 70, left: 60 };
+        const width = 1400 - margin.left - margin.right;
         const height = 500 - margin.top - margin.bottom;
 
         // Append the svg object to the body of the page
-        var svg = d3.select("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+        var svg = d3
+          .select("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
           .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
+          .attr("transform", `translate(${margin.left},${margin.top})`);
 
         // Set the ranges
-        var x = d3.scaleTime()
-          .domain(d3.extent(data, function(d) { return d.year; }))
+        var x = d3
+          .scaleTime()
+          .domain(
+            d3.extent(data, function (d) {
+              return d.year;
+            })
+          )
           .range([0, width]);
-        var y = d3.scaleLinear()
-          .domain([0, d3.max(data, function(d) { return d.median_positive_rating; })])
+        var y = d3
+          .scaleLinear()
+          .domain([
+            0,
+            d3.max(data, function (d) {
+              return d.median_positive_rating;
+            }),
+          ])
           .range([height, 0]);
 
         // Add the X Axis
-        svg.append("g")
-  .attr("transform", `translate(0,${height})`)
-  .call(d3.axisBottom(x)
-    .tickFormat(d3.timeFormat("%Y")) // Format the ticks to show only the year
-    .tickValues(data.map(d => d.year)));
+        svg
+          .append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(
+            d3
+              .axisBottom(x)
+              .tickFormat(d3.timeFormat("%Y")) // Format the ticks to show only the year
+              .tickValues(data.map((d) => d.year))
+          );
 
         // Add the Y Axis
-        svg.append("g")
-          .call(d3.axisLeft(y));
+        svg.append("g").call(d3.axisLeft(y));
 
         // X axis label
-        svg.append("text")
+        svg
+          .append("text")
           .attr("text-anchor", "end")
-          .attr("x", width-600)
+          .attr("x", width - 600)
           .attr("y", height + 40)
           .text("Year");
 
         // Y axis label
-        svg.append("text")
+        svg
+          .append("text")
           .attr("text-anchor", "end")
           .attr("transform", "rotate(-90)")
           .attr("y", -45)
           .attr("x", -100)
           .text("Median Positive Rating(%)");
 
-          // Tooltip div
+        // Tooltip div
         var tooltip = d3.select(".tooltip");
 
         // Add bars
-        svg.selectAll(".bar")
+        svg
+          .selectAll(".bar")
           .data(data)
           .enter()
           .append("rect")
           .attr("class", "bar")
-          .attr("x", d => x(d.year) - 10)
+          .attr("x", (d) => x(d.year) - 10)
           .attr("width", 20)
-          .attr("y", d => y(d.number_of_releases))
-          .attr("height", d => height - y(d.number_of_releases))
-          .on("mouseover", function(event, d) {
-            tooltip.transition()
-              .duration(200)
-              .style("opacity", .9);
-            tooltip.html(d.number_of_releases + " releases")
-              .style("left", (event.pageX + 5) + "px")
-              .style("top", (event.pageY - 28) + "px");
+          .attr("y", (d) => y(d.number_of_releases))
+          .attr("height", (d) => height - y(d.number_of_releases))
+          .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+            tooltip
+              .html(d.number_of_releases + " releases")
+              .style("left", event.pageX + 5 + "px")
+              .style("top", event.pageY - 28 + "px");
           })
-          .on("mouseout", function(d) {
-            tooltip.transition()
-              .duration(500)
-              .style("opacity", 0);
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
           });
 
         // Add line for median positive rate
-        var line = d3.line()
-          .x(function(d) { return x(d.year); })
-          .y(function(d) { return y(d.median_positive_rating); });
+        var line = d3
+          .line()
+          .x(function (d) {
+            return x(d.year);
+          })
+          .y(function (d) {
+            return y(d.median_positive_rating);
+          });
 
-        svg.append("path")
-          .data([data])
-          .attr("class", "line")
-          .attr("d", line);
+        svg.append("path").data([data]).attr("class", "line").attr("d", line);
 
+        addAnnotation(
+          svg,
+          x(new Date(2005, 0, 1)),
+          y(79.96362482471551) + 40,
+          "2005\nA nosedive of positive rating might\n be the trigger for publisher partnership"
+        ,220);
+
+        // Annotation for 2012
+        addAnnotation(
+          svg,
+          x(new Date(2012, 0, 1)),
+          y(81.55625627860252)+60,
+          "2012\nSteam Greenlight introduced"
+        ,190);
+
+        // Annotation for 2018
+        addAnnotation(
+          svg,
+          x(new Date(2018, 0, 1))-30,
+          y(76.92307692307693)+30,
+          "2018\nRemoving Steam \nGreenlight doesn't \naffect positivity rating"
+        ,119);
       });
+      function addAnnotation(svg, x, y, text,width) {
+        // Split the text by new lines for multiline support
+        const textLines = text.split("\n");
+
+        // Append the rectangle background for text
+        svg
+          .append("rect")
+          .attr("class", "annotation-rect")
+          .attr("x", x)
+          .attr("y", y - 20)
+          .attr("width",width)
+          .attr("height", 20 * textLines.length + 10)
+          .attr("rx", 5); // for rounded corners
+
+        // Append text line by line
+        textLines.forEach((line, i) => {
+          svg
+            .append("text")
+            .attr("class", "annotation-text")
+            .attr("x", x + 5)
+            .attr("y", y + i * 20)
+            .text(line);
+        });
+      }
     </script>
   </body>
 </html>
