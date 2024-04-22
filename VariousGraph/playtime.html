@@ -234,6 +234,27 @@
                 .text("Average Playtime(hours)");
 
 
+            // Define zoom behavior
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 10]) // Set the minimum and maximum zoom levels
+                .on("zoom", zoomed);
+
+            // Apply zoom behavior to the SVG container
+            svg.call(zoom);
+
+            // Function to handle zoom events
+            function zoomed(event) {
+                const { transform } = event;
+                // Update circle positions and radius based on zoom transform
+                svg.selectAll("circle")
+                    .attr("transform", transform)
+                    .attr("r", d => radiusScale(d.r) / transform.k);
+                // Update axes based on zoom transform
+                svg.select(".x-axis").call(xAxis.scale(transform.rescaleX(xScale)));
+                svg.select(".y-axis").call(yAxis.scale(transform.rescaleY(yScale)));
+            }
+            
+
         }
 
 

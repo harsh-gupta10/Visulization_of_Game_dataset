@@ -46,8 +46,30 @@ import plotly.express as px
 # Read the CSV file into a DataFrame
 df = pd.read_csv('../Data/Sunburst.csv')
 
+grouped = df.groupby('parent')
+
+# Step 2: Compute the sum of the attribute you're interested in for each group
+sum_values = grouped['value'].sum()
+
+# Step 3: Filter the groups based on the sum
+threshold = 50  # Example threshold
+filtered_parents = sum_values[sum_values > threshold].index
+unfiltered_parents = sum_values[sum_values <= threshold].index
+filtered_df = pd.concat([grouped.get_group(parent) for parent in filtered_parents])
+unfiltered_df = pd.concat([grouped.get_group(parent) for parent in unfiltered_parents])
+# Step 4: Calculate the cumulative sum of excluded values
+excluded_df = df[~df['parent'].isin(filtered_parents)]
+cumulative_sum = excluded_df['value'].sum()
+
+# Step 5: Create a DataFrame with the cumulative sum and "others" as parent
+others_df = pd.DataFrame({'parent': ['others'], 'value': [cumulative_sum]})
+
+# Step 6: Concatenate filtered_df and others_df
+final_df = pd.concat([filtered_df, others_df])
+
+
 # Create the Sunburst chart
-fig = px.sunburst(df, path=['parent', 'id'], values='value')
+fig = px.sunburst(final_df, path=['parent', 'id'], values='value')
 
 # Update the layout
 fig.update_layout(
@@ -57,6 +79,14 @@ fig.update_layout(
     height=800
 )
 
+second_fig = px.sunburst(unfiltered_df, path=['parent', 'id'], values='value')
+second_fig.update_layout(
+    title='Other Game Sales Sunburst Chart',
+    title_x=0.5,
+    width=800,
+    height=800
+)
 # Save the plot as an HTML file with interactivity
 fig.write_html("sunburstHelper.html")
+second_fig.write_html("sunburstHelper2.html")
 
