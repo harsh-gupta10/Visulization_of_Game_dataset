@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stacked Bar Chart</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        .tooltip {
+            position: absolute;
+            text-align: center;
+            width: 120px;
+            height: 40px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: lightsteelblue;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="chart"><svg></svg></div>
+<div class="tooltip"></div>
+<script>
+// Define the dimensions of the chart
+const margin = {top: 30, right: 50, bottom: 100, left: 60},
+      width = 1200 - margin.left - margin.right,
+      height = 1000 - margin.top - margin.bottom;
+
+// Append the svg object to the div called 'chart'
+const svg = d3.select("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// Parse the Data (replace this URL with the path to your actual data)
+   d3.csv("../Data/video_games_sales.csv").then((data) => {
+
+  // List of subgroups = header of the csv files = soil condition here
+  data.forEach((d) => {
+          d.Year = +d.Year_of_Release;
+          d.NA_Sales = +d.NA_Sales;
+          d.EU_Sales = +d.EU_Sales;
+          d.JP_Sales = +d.JP_Sales;
+          d.Other_Sales = +d.Other_Sales;
+        });
+
+        // Group and sum sales by year and region using array.reduce
+        const sumSalesByYear = data.reduce((acc, d) => {
+    acc[d.Year] = acc[d.Year] || {Year: d.Year, NA_Sales: 0, EU_Sales: 0, JP_Sales: 0, Other_Sales: 0};
+    acc[d.Year].NA_Sales += d.NA_Sales;
+    acc[d.Year].EU_Sales += d.EU_Sales;
+    acc[d.Year].JP_Sales += d.JP_Sales;
+    acc[d.Year].Other_Sales += d.Other_Sales;
+    return acc;
+  }, {});
+
+  // Convert the object to an array for D3.js processing
+  const processedData = Object.values(sumSalesByYear);
+  const subgroups = ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"];
+  const groups = processedData.map(d => d.Year);
+
+  // X axis
+  const x = d3.scaleBand()
+        .domain(groups)
+        .range([0, width])
+        .padding(0.2);
+    const xAxis = svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x).tickSizeOuter(0));
+
+  // X axis label
+  xAxis.append("text")
+        .attr("class", "axis-label")
+        .attr("x", 100)
+        .attr("y", 900)
+        .style("text-anchor", "middle")
+        .text("Year of Release");
+
+  // Y axis
+  const maxSales = d3.max(processedData, d => d.NA_Sales + d.EU_Sales + d.JP_Sales + d.Other_Sales);
+  const y = d3.scaleLinear()
+        .domain([0, maxSales])
+        .range([height, 0]);
+    const yAxis = svg.append("g")
+        .call(d3.axisLeft(y));
+  svg.append("g")
+    .call(d3.axisLeft(y));
+  // Y axis label
+  yAxis.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -40)
+        .attr("x", -height / 2)
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Total Sales (in millions)");
+
+  // Color palette
+  const color = d3.scaleOrdinal()
+    .domain(subgroups)
+    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3']);
+
+  // Stack the data
+  const stackedData = d3.stack()
+    .keys(subgroups)(processedData);
+
+  const tooltip=d3.select(".tooltip")
+  // Show the bars
+  svg.append("g")
+    .selectAll("g")
+    .data(stackedData)
+    .enter().append("g")
+      .attr("fill", d => color(d.key))
+    .selectAll("rect")
+    .data(d => d)
+    .enter().append("rect")
+      .attr("x", d => x(d.data.Year))
+      .attr("y", d => y(d[1]))
+      .attr("height", d => y(d[0]) - y(d[1]))
+      .attr("width", x.bandwidth())
+      .on("mouseover", (event, d) => {
+            tooltip.style("opacity", 1);
+            console.log(d)
+            tooltip.html(`Sales: ${d[1] - d[0]} Millions`)
+                   .style("left", (event.pageX + 10) + "px")
+                   .style("top", (event.pageY - 28) + "px");
+          })
+          .on("mouseout", () => tooltip.style("opacity", 0));
+
+    // Adding legend
+    const legend = svg.append("g")
+      .attr("font-family", "sans-serif")
+      .attr("font-size", 18)
+      .attr("text-anchor", "end")
+      .selectAll("g")
+      .data(subgroups.slice().reverse())
+      .enter().append("g")
+        .attr("transform", (d, i) => `translate(-50,${i * 20+100})`);
+
+    legend.append("rect")
+      .attr("x", width - 19)
+      .attr("width", 19)
+      .attr("height", 19)
+      .attr("fill", color);
+
+    legend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9.5)
+      .attr("dy", "0.32em")
+      .text(d => d);
+});
+
+</script>
+</body>
+</html>
