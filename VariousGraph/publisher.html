@@ -4,6 +4,25 @@
 <head>
     <title>Vertical Bar Chart</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Prevents horizontal scrolling */
+  }
+  .canvas-container {
+    display: flex; /* Uses flexbox to align children side by side */
+    justify-content: center; /* Centers the canvas elements horizontally */
+  }
+  canvas {
+    flex: 1 1 0px; /* Allows each canvas to grow and shrink as needed */
+    max-height: 98%;
+    margin: 10px; /* Adds space around the canvas elements */
+    border: 1px solid #ccc; /* Optional: Adds a border around the canvas for visibility */
+  }
+</style>
 </head>
 <body>
   <h1>Publisher Vs User Score , Global Sales , User Count</h1>
@@ -11,8 +30,9 @@
   <h5>User Score out of 10 </h5>
   <h5>Global Sales in Millons $</h5>
   <h5>User Count in 10 millons</h5>
+    <div class="canvas-container">
     <canvas id="myChart" width="400" height="400"></canvas>
-
+    </div>
     <script>
         // Load data from CSV
         fetch('../Data/publisher.csv')
