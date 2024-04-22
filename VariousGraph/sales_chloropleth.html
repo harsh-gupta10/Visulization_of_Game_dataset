@@ -16,9 +16,14 @@
    }
   </style>
   <body>
+    <h3>Chloropleth for yearwise sales worldwide</h3>
     <svg></svg>
     <div id="legend"></div>
-    <input type="range" id="year-slider" min="1980" max="2020" step="1" />
+    <div style="margin: 20px;">
+      <label for="year-slider" id="year-label">Year: 1980</label> <!-- Initial year set as an example -->
+      <input type="range" id="year-slider" min="1980" max="2020" step="1" />
+    </div>
+    <div id="tooltip" style="position: absolute; visibility: hidden; padding: 10px; background: rgba(255, 255, 255, 0.8); border: 1px solid #d3d3d3; border-radius: 5px; pointer-events: none;"></div>
     <script>
       const countryRegionMap = {
     "Canada": "NA",
@@ -92,11 +97,12 @@
 };
 // Define color scales for each region
 const colorScales = {
-  "NA": d3.scaleLinear().range(["#FFCCCC", "#FF0000"]),
-  "EU": d3.scaleLinear().range(["#CCCCFF", "#0000FF"]),
-  "JP": d3.scaleLinear().range(["#CCFFCC", "#00FF00"]),
-  "Other": d3.scaleLinear().range(["#FFFFCC", "#FFFF00"])
+  "NA": d3.scaleQuantize().range(["#FFCCCC", "#FF9999", "#FF6666", "#FF3333", "#FF0000"]),
+  "EU": d3.scaleQuantize().range(["#CCCCFF", "#9999FF", "#6666FF", "#3333FF", "#0000FF"]),
+  "JP": d3.scaleQuantize().range(["#CCFFCC", "#99FF99", "#66FF66", "#33FF33", "#00FF00"]),
+  "Other": d3.scaleQuantize().range(["#FFE5CC", "#FFCC99", "#FFB266", "#FF9933", "#FF8000"])
 };
+
 
 
 
@@ -148,17 +154,41 @@ const colorScales = {
           .append("path")
           .attr("d", pathGenerator)
           .attr("class", "region")
-          .style("fill", (d) => determineColor(1980, d.properties.name)); // Initialize with 1980 or the earliest year available
+          .style("fill", (d) => determineColor(1980, d.properties.name))
+          .on("mouseover", function(event, d) {
+   d3.select("#tooltip")
+     .style("visibility", "visible")
+     .html(() => {
+       const region = countryRegionMap[d.properties.name] || "Other";
+       const yearData = salesByYearRegion[initialYear];  // Replace 'initialYear' with the year you need, or adjust based on your slider
+       if (yearData && yearData[region + "_Sales"] !== undefined) {
+         return `<strong>${region}</strong><br>Sales: ${yearData[region + "_Sales"].toFixed(2)} million units`;
+       } else {
+         return `<strong>${region}</strong><br>No data available`;
+       }
+     });
+ })
+ .on("mousemove", function(event) {
+   d3.select("#tooltip")
+     .style("top", (event.pageY - 10) + "px")
+     .style("left", (event.pageX + 10) + "px");
+ })
+ .on("mouseout", function() {
+   d3.select("#tooltip").style("visibility", "hidden");
+ }); // Initialize with 1980 or the earliest year available
 
           d3.select("#year-slider").on("input", function () {
   updateMap(this.value);
 });
 
-
+function updateYearLabel(year) {
+  d3.select("#year-label").text(`Year: ${year}`);
+ }
 // Update function when slider changes
 d3.select("#year-slider").on("input", function () {
   updateMap(this.value);
   updateLegend(this.value);
+  updateYearLabel(this.value);
 });
 
 function updateMap(year) {
@@ -171,6 +201,7 @@ function updateMap(year) {
     colorScales[region].domain([0, maxSales]);
   });
 
+  
   svg
     .selectAll(".region")
     .transition()
@@ -196,10 +227,17 @@ function updateLegend(year) {
   legendEnter.merge(legend)
     .html(region => {
       const maxSales = Math.max(...Object.values(salesByYearRegion).map(d => d[region + "_Sales"]));
-      return `${region}: up to ${maxSales.toFixed(2)} millions`;
+      const colors = colorScales[region].range();
+      const domain = colorScales[region].domain();
+      const interval = (domain[1] - domain[0]) / colors.length;
+      let colorInfo = colors.map((color, index) => {
+        return `<span style="background-color: ${color}; color: ${index > 2 ? '#fff' : '#000'}; padding: 5px;">${(domain[0] + index * interval).toFixed(2)} to ${(domain[0] + (index + 1) * interval).toFixed(2)} M</span>`;
+      }).join(" ");
+      return `${region}: ${colorInfo}`;
     })
     .style("color", region => colorScales[region](colorScales[region].domain()[1])); // Use the highest color of the range
 }
+
   const initialYear = 1980; // Change according to your data availability
   updateMap(initialYear);
   updateLegend(initialYear);
