@@ -1,197 +1,292 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Line Graph with Chart.js</title>
-    <!-- Include Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- <link rel="stylesheet" href="styles.css" /> -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <header class="bg-light py-3">
-      <div class="container d-flex align-items-center">
-        <a href="../index.html">
-          <img
-            src="../Images/logo.jpg"
-            alt="Logo"
-            class="mr-3"
-            style="width: 50px"
-          />
-        </a>
-        <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html"
-          >Price Vs Player</a
-        >
-        <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
-        <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
-        <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
-        <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
-        
-      </div>
-    </header>
-    <h3>Price Vs Players This Visulaization is for Business Analyst</h3>
-    <div>
-      <label for="attribute"></label>
-      <select id="attribute">
-        <!-- <option value="NoPlayer">NoPlayer</option>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Line Graph with Chart.js</title>
+  <!-- Include Chart.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+  <style>
+    canvas {
+      width: 80%;
+      /* Adjust width as needed */
+      height: auto;
+      /* Maintain aspect ratio */
+      margin-bottom: 20px;
+      /* Add margin between charts */
+    }
+  </style>
+</head>
+
+<body>
+  <header class="bg-light py-3">
+    <div class="container d-flex align-items-center">
+      <a href="../index.html">
+        <img src="../Images/logo.jpg" alt="Logo" class="mr-3" style="width: 50px" />
+      </a>
+      <a class="nav-link" href="../VariousGraph/PriceVsPlayer.html">Price Vs Player</a>
+      <a class="nav-link" href="../VariousGraph/heatmap.html">Heatmap</a>
+      <a class="nav-link" href="../VariousGraph/wordcloud.html">WordCloud</a>
+      <a class="nav-link" href="../VariousGraph/sector_chart.html">Genres Freq PlayTime</a>
+      <a class="nav-link" href="../VariousGraph/playtime.html">Playtime Analysis</a>
+    </div>
+  </header>
+  <h3>Price Vs Players This Visualization is for Business Analyst</h3>
+  <div>
+    <label for="attribute"></label>
+    <select id="attribute">
+      <!-- <option value="NoPlayer">NoPlayer</option>
         <option value="Sale">Sale</option>
         <option value="Both">NoPlayer and Sale</option> -->
-      </select>
-    </div>
-    <div>
-      <label for="dataset">Select Game:</label>
-      <select id="dataset">
-        <option value="../Data/400.csv">GTA V</option>
-        <option value="../Data/254100.csv">CS:GO</option>
-        <option value="../Data/287260.csv">Dota 2</option>
-        <option value="../Data/300570.csv">PUBG</option>
-        <option value="../Data/620.csv">Among Us</option>
-        <!-- Add additional options for other datasets if needed -->
-      </select>
-    </div>
-    <canvas id="myChart" width="600" height="300"></canvas>
+    </select>
+  </div>
+  <div>
+    <label for="dataset">Select Game:</label>
+    <select id="dataset">
+      <option value="../Data/400.csv">GTA V</option>
+      <option value="../Data/254100.csv">CS:GO</option>
+      <option value="../Data/287260.csv">Dota 2</option>
+      <option value="../Data/300570.csv">PUBG</option>
+      <option value="../Data/620.csv">Among Us</option>
+      <!-- Add additional options for other datasets if needed -->
+    </select>
+  </div>
+  <canvas id="myChart1" width="200" height="200"></canvas>
+  <canvas id="myChart2" width="200" height="200"></canvas>
 
-    <script>
-      // Function to fetch CSV data
-      async function fetchData(url) {
-        const response = await fetch(url);
-        const data = await response.text();
-        return data;
-      }
+  <script>
+    // Function to fetch CSV data
+    async function fetchData(url) {
+      const response = await fetch(url);
+      const data = await response.text();
+      return data;
+    }
 
-      // Function to parse CSV data
-      function parseData(data) {
-        const lines = data.split("\n").slice(1); // Skip header
-        const labels = [];
-        const noPlayerValues = [];
-        const saleValues = [];
+    // Function to parse CSV data
+    function parseData(data) {
+      const lines = data.split("\n").slice(1); // Skip header
+      const labels = [];
+      const noPlayerValues = [];
+      const saleValues = [];
 
-        lines.forEach((line) => {
-          const [week, noPlayer, sale] = line.split(",");
-          labels.push(week);
-          const parsedNoPlayer = Number(noPlayer);
-          if (parsedNoPlayer > 100) {
-            noPlayerValues.push(parsedNoPlayer / 40);
-          } else {
-            noPlayerValues.push(parsedNoPlayer);
-          }
-          saleValues.push(Number(sale));
-        });
+      lines.forEach((line) => {
+        const [week, noPlayer, sale] = line.split(",");
+        labels.push(week);
+        const parsedNoPlayer = Number(noPlayer);
+        if (parsedNoPlayer > 100) {
+          noPlayerValues.push(parsedNoPlayer);
+        } else {
+          noPlayerValues.push(parsedNoPlayer);
+        }
+        saleValues.push(Number(sale));
+      });
 
-        return { labels, noPlayerValues, saleValues };
-      }
+      return { labels, noPlayerValues, saleValues };
+    }
 
-      // Function to draw chart
-      function drawChart(attribute) {
-        const ctx = document.getElementById("myChart").getContext("2d");
-        const selectedDataset = document.getElementById("dataset").value;
+    // Function to draw chart
+    function drawChart(attribute) {
+      const ctx1 = document.getElementById("myChart1").getContext("2d");
+      const ctx2 = document.getElementById("myChart2").getContext("2d");
+      const selectedDataset = document.getElementById("dataset").value;
 
-        fetchData(selectedDataset).then((data) => {
-          const parsedData = parseData(data);
+      fetchData(selectedDataset).then((data) => {
+        const parsedData = parseData(data);
 
-          if (window.chart) {
-            window.chart.destroy(); // Destroy existing chart if any
-          }
+        if (window.chart1) {
+          window.chart1.destroy(); // Destroy existing chart if any
+        }
+        if (window.chart2) {
+          window.chart2.destroy(); // Destroy existing chart if any
+        }
 
-          window.chart = new Chart(ctx, {
-            type: "line",
-            data: {
-              labels: parsedData.labels,
-              datasets: [
+        window.chart1 = new Chart(ctx1, {
+          type: "line",
+          data: {
+            labels: parsedData.labels,
+            datasets: [
+              {
+                label: "NoPlayer",
+                data: parsedData.noPlayerValues,
+                borderColor: "rgb(75, 192, 192)",
+                borderWidth: 2,
+                fill: false,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              yAxes: [
                 {
-                  label: "NoPlayer",
-                  data: parsedData.noPlayerValues,
-                  borderColor: "rgb(75, 192, 192)",
-                  borderWidth: 2,
-                  fill: false,
-                },
-                {
-                  label: "Sale",
-                  data: parsedData.saleValues,
-                  borderColor: "rgb(255, 99, 132)",
-                  borderWidth: 2,
-                  fill: false,
+                  ticks: {
+                    beginAtZero: true,
+                  },
                 },
               ],
             },
-            options: {
-              responsive: true,
-              scales: {
-                yAxes: [
-                  {
-                    ticks: {
-                      beginAtZero: true,
-                    },
-                  },
-                ],
+          },
+        });
+
+        window.chart2 = new Chart(ctx2, {
+          type: "line",
+          data: {
+            labels: parsedData.labels,
+            datasets: [
+              {
+                label: "Sale",
+                data: parsedData.saleValues,
+                borderColor: "rgb(255, 99, 132)",
+                borderWidth: 2,
+                fill: false,
               },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                  },
+                },
+              ],
             },
-          });
+          },
         });
-      }
 
-      // Load CSV data and draw initial chart
-      drawChart("Both"); // Draw initial chart with NoPlayer as y-axis
+        // Synchronize hovering effect
 
-      // Event listener for attribute change
+        // Event listener for mousemove on the first chart
+        ctx1.canvas.addEventListener("mousemove", function (evt) {
+          console.log("Mouse moved over the first chart");
+          const activePoints = window.chart1.getElementsAtEventForMode(evt, "nearest", { intersect: true }, false);
+          const firstPoint = activePoints[0];
+          if (firstPoint) {
+            const month = window.chart1.data.labels[firstPoint.index];
+            console.log("Month:", month);
+            const index = window.chart2.data.labels.indexOf(month);
+            console.log("Index in second chart:", index);
+            if (index !== -1) {
+              window.chart2.setActiveElements([{ datasetIndex: 0, index }]);
 
-      // Event listener for dataset change
-      document
-        .getElementById("dataset")
-        .addEventListener("change", function () {
-          const selectedAttribute = document.getElementById("attribute").value;
-          drawChart(selectedAttribute); // Redraw chart with selected dataset
+
+
+              console.log("Active elements in second chart set:", window.chart2.getActiveElements());
+              window.chart2.options.hover.mode = 'index';
+              window.chart2.options.hover.intersect = true;
+
+              // Change color of corresponding point in chart 2 to yellow
+              const dataset = window.chart2.data.datasets[0];
+              dataset.pointBackgroundColor = dataset.data.map((_, i) => i === index ? 'blue' : 'rgb(255, 99, 132)');
+
+              window.chart2.update();
+              window.chart2.tooltip._active = [window.chart2.getActiveElements()[0]];
+              window.chart2.tooltip.update();
+              window.chart2.draw();
+
+            }
+          }
         });
-    </script>
-    <footer class="footer bg-dark text-light py-3 mt-auto">
-      <div class="container text-center">
-        <div class="row">
-          <div class="col">
-            <p class="text-white mt-3">
-              Made with <span style="color: #ffffff">&hearts;</span> By Harsh &
-              Divyansh & Ishan
-            </p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <a
-              href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Harsh</a
-            >
-            <a href="https://github.com/harsh-gupta10" class="text-white mr-4"
-              ><i class="fab fa-github"></i> Harsh</a
-            >
-            <a
-              href="https://www.linkedin.com/in/divyansh-pandey-41821a254/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Divyansh</a
-            >
-            <a href="https://github.com/divyansh911" class="text-white mr-4"
-              ><i class="fab fa-github"></i> Divyansh</a
-            >
-            <a
-              href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/"
-              class="text-white mr-4"
-              ><i class="fab fa-linkedin"></i> Ishan</a
-            >
-            <!-- GitHub links -->
 
-            <a href="https://github.com/Ishan-1" class="text-white"
-              ><i class="fab fa-github"></i> Ishan</a
-            >
-          </div>
+
+        // Synchronize hovering effect
+        // Synchronize hovering effect
+        ctx2.canvas.addEventListener("mousemove", function (evt) {
+          console.log("Mouse moved over the second chart");
+          const activePoints = window.chart2.getElementsAtEventForMode(evt, "nearest", { intersect: true }, false);
+          const firstPoint = activePoints[0];
+          if (firstPoint) {
+            const month = window.chart2.data.labels[firstPoint.index];
+            console.log("Month:", month);
+            const index = window.chart1.data.labels.indexOf(month);
+            console.log("Index in first chart:", index);
+            if (index !== -1) {
+              window.chart1.setActiveElements([{ datasetIndex: 0, index }]);
+              console.log("Active elements in first chart set:", window.chart1.getActiveElements());
+              window.chart1.options.hover.mode = 'index';
+              window.chart1.options.hover.intersect = true;
+
+              // Change color of corresponding point in chart 1 to yellow
+              const dataset = window.chart1.data.datasets[0];
+              dataset.pointBackgroundColor = dataset.data.map((_, i) => i === index ? 'red' : 'rgb(75, 192, 192)');
+              window.chart1.update();
+
+              window.chart1.tooltip._active = [window.chart1.getActiveElements()[0]];
+              window.chart1.tooltip.update();
+              window.chart1.draw();
+
+
+            }
+          }
+        });
+
+        ctx1.canvas.addEventListener("mouseout", function (evt) {
+          const dataset = window.chart2.data.datasets[0];
+          dataset.pointBackgroundColor = 'rgb(75, 192, 192)'; // Reset color to original
+          window.chart2.update();
+
+          window.chart2.tooltip._active = [];
+          window.chart2.tooltip.update();
+          window.chart2.draw();
+
+
+        });
+
+        ctx2.canvas.addEventListener("mouseout", function (evt) {
+          const dataset = window.chart1.data.datasets[0];
+          dataset.pointBackgroundColor = 'rgb(75, 192, 192)'; // Reset color to original
+          window.chart1.update();
+
+          window.chart1.tooltip._active = [];
+          window.chart1.tooltip.update();
+          window.chart1.draw();
+
+        });
+
+
+      });
+    }
+
+    // Load CSV data and draw initial chart
+    drawChart("Both"); // Draw initial chart with NoPlayer as y-axis
+
+    // Event listener for dataset change
+    document.getElementById("dataset").addEventListener("change", function () {
+      const selectedAttribute = document.getElementById("attribute").value;
+      drawChart(selectedAttribute); // Redraw chart with selected dataset
+    });
+  </script>
+  <footer class="footer bg-dark text-light py-3 mt-auto">
+    <div class="container text-center">
+      <div class="row">
+        <div class="col">
+          <p class="text-white mt-3">
+            Made with <span style="color: #ffffff">&hearts;</span> By Harsh & Divyansh & Ishan
+          </p>
         </div>
       </div>
-    </footer>
-  </body>
+      <div class="row">
+        <div class="col">
+          <a href="https://www.linkedin.com/in/harsh-gupta-4ba4a7254/" class="text-white mr-4"><i
+              class="fab fa-linkedin"></i> Harsh</a>
+          <a href="https://github.com/harsh-gupta10" class="text-white mr-4"><i class="fab fa-github"></i> Harsh</a>
+          <a href="https://www.linkedin.com/in/divyansh-pandey-41821a254/" class="text-white mr-4"><i
+              class="fab fa-linkedin"></i> Divyansh</a>
+          <a href="https://github.com/divyansh911" class="text-white mr-4"><i class="fab fa-github"></i> Divyansh</a>
+          <a href="https://www.linkedin.com/in/ishan-gupta-178ba7a3/" class="text-white mr-4"><i
+              class="fab fa-linkedin"></i> Ishan</a>
+          <!-- GitHub links -->
+
+          <a href="https://github.com/Ishan-1" class="text-white"><i class="fab fa-github"></i> Ishan</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+
 </html>
