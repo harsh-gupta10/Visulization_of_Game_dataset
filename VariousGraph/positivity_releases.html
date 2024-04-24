@@ -95,6 +95,16 @@
             }),
           ])
           .range([height, 0]);
+        
+          var y2 = d3
+          .scaleLinear()
+          .domain([
+            0,
+            d3.max(data, function (d) {
+              return d.number_of_releases;
+            }),
+          ])
+          .range([height, 0]);
 
         // Add the X Axis
         svg
@@ -139,8 +149,8 @@
           .attr("class", "bar")
           .attr("x", (d) => x(d.year) - 10)
           .attr("width", 20)
-          .attr("y", (d) => y(d.number_of_releases))
-          .attr("height", (d) => height - y(d.number_of_releases))
+          .attr("y", (d) => y2(d.number_of_releases))
+          .attr("height", (d) => height - y2(d.number_of_releases))
           .on("mouseover", function (event, d) {
             tooltip.transition().duration(200).style("opacity", 0.9);
             tooltip
