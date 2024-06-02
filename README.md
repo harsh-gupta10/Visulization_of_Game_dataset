@@ -1,10 +1,10 @@
 # Visulization of Game dataset
 
 Live at
-
-https://harsh-gupta10.github.io/Visulization_of_Game_dataset/```
-
 ```
+https://harsh-gupta10.github.io/Visulization_of_Game_dataset/```
+```
+
 # Website Visualization of Game Dataset
 
 This project is a part of the Data Visualization course and aims to visualize online gaming industry data using various data visualization libraries such as D3.js, Chart.js, and Plotly.js. The visualizations are designed to cater to three different user groups: Players, Engineers, and Business Persons (Companies).
