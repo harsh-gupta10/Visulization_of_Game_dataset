@@ -8,7 +8,6 @@ Explanation Video :- `https://www.youtube.com/watch?v=lG-359jFWZk&ab_channel=Div
 Explanation PPt:- `https://docs.google.com/presentation/d/10zpt5szJRyCcbE8OEpqwJvRQFO4aRGYgDAc1kNxM1mE/edit#slide=id.g2ceb0341583_0_86`
 
 
-### Check out this [Imagesd][1].
 
 
 This project is a part of the Data Visualization course and aims to visualize online gaming industry data using various data visualization libraries such as D3.js, Chart.js, and Plotly.js. The visualizations are designed to cater to three different user groups: Players, Engineers, and Business Persons (Companies).
@@ -56,7 +55,6 @@ Contributions to this project are welcome. If you encounter any issues or have s
 - The developers of D3.js, Chart.js, and Plotly.js for creating excellent data visualization libraries.
 
 ## Images
-[1]:  Imagesd
 
 ![a](./Images/a.png)
 ![a](./Images/Critics.png)
